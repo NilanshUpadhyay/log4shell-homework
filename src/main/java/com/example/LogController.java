@@ -1,4 +1,5 @@
 package com.example;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +10,12 @@ public class LogController {
 
     @PostMapping("/log")
     public String logInput(@RequestBody String input) {
-        if (input.contains("${jndi:")) {
-            return "Invalid input detected";
-        }
         logger.info("User input: " + input);
         return "Logged: " + input;
+    }
+
+    @GetMapping("/")
+    public String home() {
+        return "Log4Shell Demo App is running!";
     }
 }

