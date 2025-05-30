@@ -1,0 +1,37 @@
+# PowerShell HTTP Request Fixes
+
+# Option 1: Use Invoke-WebRequest (PowerShell native)
+Invoke-WebRequest -Uri "http://localhost:8080/log" -Method POST -Body "test" -ContentType "application/json"
+
+# Option 2: Use Invoke-RestMethod (better for APIs)
+Invoke-RestMethod -Uri "http://localhost:8080/log" -Method POST -Body "test" -ContentType "application/json"
+
+# Option 3: Use actual curl.exe (if available)
+curl.exe -X POST http://localhost:8080/log -d "test"
+
+# Option 4: More detailed PowerShell request with headers
+$headers = @{
+    'Content-Type' = 'application/json'
+    'Accept' = 'application/json'
+}
+Invoke-WebRequest -Uri "http://localhost:8080/log" -Method POST -Body "test" -Headers $headers
+
+# Option 5: JSON payload example
+$jsonPayload = @{
+    message = "test"
+    timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:8080/log" -Method POST -Body $jsonPayload -ContentType "application/json"
+
+# Option 6: Error handling
+try {
+    $response = Invoke-WebRequest -Uri "http://localhost:8080/log" -Method POST -Body "test"
+    Write-Host "Success: $($response.StatusCode)"
+    Write-Host "Response: $($response.Content)"
+} catch {
+    Write-Host "Error: $($_.Exception.Message)"
+}
+
+# Check if your server is running
+Test-NetConnection -ComputerName localhost -Port 8080
